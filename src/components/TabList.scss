@@ -1,0 +1,17 @@
+.tab-list-components { 
+    .nav-link {
+        .icon-close {
+            visibility: hidden;
+        }
+        &.active {
+            .icon-close {
+                visibility: visible;
+            }
+        }
+        &:hover {
+            .icon-close {
+                visibility: visible;
+            }
+        }
+    }
+}
