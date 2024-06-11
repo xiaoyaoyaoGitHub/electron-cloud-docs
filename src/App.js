@@ -9,12 +9,12 @@ import MDEditor from './components/MDEditor';
 
 import originFiles from "./defaultFiles"
 
-import { flattenArr } from "./utils/flatten"
+import { flattenArr, objToArr } from "./utils/flatten"
 import { useState } from 'react';
 function App() {
 
   // 总的文件列表
-  const [files, setFiles] = useState(originFiles);
+  const [files, setFiles] = useState(flattenArr(originFiles));
 
   // 编辑选中的文件
   const [selectFileId, setSelectFileId] = useState("");
@@ -41,15 +41,15 @@ function App() {
 
   const onFileClick = (id) => {
     if (activeFiles.findIndex(file => file.id === id) === -1) {
-      console.log(files);
-      setActiveFiles([...activeFiles, files.find(file => file.id === id)])
+      setActiveFiles([...activeFiles, files[id]])
     }
     setSelectFileId(id)
   }
-  const onFileDelete = (index) => {
-    const newFiles = files.concat();
-    onFileClose(newFiles[index].id)
-    newFiles.splice(index, 1)
+  const onFileDelete = (id) => {
+    const newFiles = Object.assign({}, files);
+    onFileClose(id)
+    // newFiles.splice(index, 1)
+    delete newFiles[id]
     setFiles(newFiles)
   }
 
@@ -60,19 +60,28 @@ function App() {
     const newActiveFiles = activeFiles.concat();
     const changeFileIndex = newActiveFiles.findIndex(file => file.id === id);
     if (changeFileIndex < 0) return;
-    newActiveFiles[changeFileIndex] = files.find(file => file.id === id)
+    newActiveFiles[changeFileIndex] = files[id]
     setActiveFiles(newActiveFiles)
 
   }
 
   const addFile = () => {
-    setFiles([...files, {
+    const newFiles = Object.assign({}, files);
+    newFiles[((new Date()).getTime()).toString()] = {
       id: ((new Date()).getTime()).toString(),
       title: '未命名',
       content: `
         
-            `
-    }])
+        `
+    }
+    setFiles(newFiles)
+    // setFiles([...files, {
+    //   id: ((new Date()).getTime()).toString(),
+    //   title: '未命名',
+    //   content: `
+
+    //         `
+    // }])
   }
 
   return (

@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react"
 import useKeyPress from "../hooks/useKeyPress"
-const FileList = ({ files = [], onSaveEdit, onFileDelete, onFileClick, selectFileId, }) => {
+import { objToArr } from "../utils/flatten"
+const FileList = ({ files = {}, onSaveEdit, onFileDelete, onFileClick, selectFileId, }) => {
 
-    const [editIndex, setEditIndex] = useState(null)
+    const [editId, setEditId] = useState(null)
     const [editTitle, setEditTitle] = useState('')
 
     // 监听esc
     const keyPressedEsc = useKeyPress(27)
     const keyPressedEnter = useKeyPress(13)
     const onFileEdit = (file, index) => {
-        setEditIndex(index)
+        setEditId(file.id)
         setEditTitle(file.title);
 
     }
 
     const closeSearch = () => {
-        setEditIndex(null)
+        setEditId(null)
     }
 
     useEffect(() => {
@@ -24,12 +25,13 @@ const FileList = ({ files = [], onSaveEdit, onFileDelete, onFileClick, selectFil
 
     useEffect(() => {
         if (keyPressedEnter) {
-            const newFiles = files.concat();
-            newFiles[editIndex] = {
-                ...files[editIndex],
+            console.log(files);
+            const newFiles = Object.assign({}, files);
+            newFiles[editId] = {
+                ...files[editId],
                 title: editTitle
             }
-            onSaveEdit(newFiles, newFiles[editIndex].id);
+            onSaveEdit(newFiles, editId);
             closeSearch()
 
         }
@@ -40,9 +42,9 @@ const FileList = ({ files = [], onSaveEdit, onFileDelete, onFileClick, selectFil
 
     return <ul className="list-group list-group-flush ">
         {
-            files.map((file, index) => <li key={index} onClick={() => onFileClick(file.id)} className={` ${selectFileId === file.id ? 'active' : ''} list-group-item  d-flex justify-content-between align-items-center`}>
+            objToArr(files).map((file, index) => <li key={index} onClick={() => onFileClick(file.id)} className={` ${selectFileId === file.id ? 'active' : ''} list-group-item  d-flex justify-content-between align-items-center`}>
                 {
-                    index !== editIndex ? <><span>
+                    file.id !== editId ? <><span>
                         <i className="bi bi-markdown"></i> {file.title}
                     </span>
                         <span className="">
@@ -52,7 +54,7 @@ const FileList = ({ files = [], onSaveEdit, onFileDelete, onFileClick, selectFil
                             }}></i>
                             <i className="bi bi-trash" onClick={(e) => {
                                 e.stopPropagation()
-                                onFileDelete(index)
+                                onFileDelete(file.id)
                             }}></i>
                         </span></> :
                         <>
