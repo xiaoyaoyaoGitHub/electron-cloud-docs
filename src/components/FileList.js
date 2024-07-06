@@ -31,7 +31,7 @@ const FileList = ({ files = {}, onSaveEdit, onFileDelete, onFileClick, selectFil
                 ...files[editId],
                 title: editTitle
             }
-            onSaveEdit(newFiles, editId);
+            onSaveEdit(newFiles, editId, editTitle);
             closeSearch()
 
         }

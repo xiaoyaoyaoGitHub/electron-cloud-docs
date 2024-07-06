@@ -11,6 +11,10 @@ import originFiles from "./defaultFiles"
 
 import { flattenArr, objToArr } from "./utils/flatten"
 import { useState } from 'react';
+
+import fsUtils from "./utils/fileHelper"
+const { join } = window.require('path')
+const { app } = window.require('@electron/remote')
 function App() {
 
   // 总的文件列表
@@ -53,9 +57,13 @@ function App() {
     setFiles(newFiles)
   }
 
-  const onSaveEdit = (files, id) => {
+  const onSaveEdit = (files, id, originTitle) => {
     console.log(files);
-    setFiles(files);
+    console.log(files[id].title);
+    fsUtils.renameFile(join(app.getPath('documents'), `${originTitle}.md`), join(app.getPath('documents'), `${files[id].title}.md`)).then(() => {
+      setFiles(files);
+    })
+
     // 更新活跃文件标题
     const newActiveFiles = activeFiles.concat();
     const changeFileIndex = newActiveFiles.findIndex(file => file.id === id);
@@ -74,7 +82,11 @@ function App() {
         
         `
     }
-    setFiles(newFiles)
+    fsUtils.writeFile(join(app.getPath('documents'), '未命名.md'), '234').then((err, data) => {
+      console.log(err, data);
+      setFiles(newFiles)
+    })
+
     // setFiles([...files, {
     //   id: ((new Date()).getTime()).toString(),
     //   title: '未命名',

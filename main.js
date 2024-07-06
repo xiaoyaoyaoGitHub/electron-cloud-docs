@@ -15,6 +15,8 @@ app.on('ready', () => {
             contextIsolation: false
         },
     })
+    require('@electron/remote/main').initialize();
+    require("@electron/remote/main").enable(mainWindow.webContents)
     mainWindow.loadURL('http://localhost:3000')
 
     mainWindow.webContents.openDevTools()
